@@ -889,7 +889,7 @@ void CCSBotManager::MaintainBotQuota()
 	if (m_isLearningMap)
 		return;
 
-	int humanPlayersInGame = UTIL_HumansInGame();
+	int humanPlayersInGame = UTIL_HumansInGame(IGNORE_SPECTATORS);
 
 	// don't add bots until local player has been registered, to make sure he's player ID #1
 	if (!IS_DEDICATED_SERVER() && humanPlayersInGame == 0)
