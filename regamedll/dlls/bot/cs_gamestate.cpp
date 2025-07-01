@@ -353,6 +353,9 @@ CHostage *CSGameState::GetNearestFreeHostage(Vector *knowPos) const
 	if (!startArea)
 		return nullptr;
 
+	if (m_hostageEscortCount >= m_hostageCount * Q_min(hostages_rescued_ratio.value, 1.0f))
+		return nullptr;
+
 	CHostage *close = nullptr;
 	const Vector *closePos = nullptr;
 	float closeDistance = 9999999999.9f;
