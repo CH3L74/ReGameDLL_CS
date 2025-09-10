@@ -390,4 +390,3 @@ jobs:
             *.asc
         env:
           GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
-
