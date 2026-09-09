@@ -674,63 +674,6 @@ void CCSBot::Update()
 	}
 	}
 
-	// Follow nearby humans if our co-op is high and we have nothing else to do
-	// If we were just following someone, don't auto-follow again for a short while to
-	// give us a chance to do something else.
-	const float earliestAutoFollowTime = 5.0f;
-	const float minAutoFollowTeamwork = 0.4f;
-	if (TheCSBots()->GetElapsedRoundTime() > earliestAutoFollowTime
-		&& GetProfile()->GetTeamwork() > minAutoFollowTeamwork
-		&& CanAutoFollow()
-		&& !IsBusy()
-		&& !IsFollowing()
-		&& !GetGameState()->IsAtPlantedBombsite())
-	{
-		// chance of following is proportional to teamwork attribute
-		if (GetProfile()->GetTeamwork() > RANDOM_FLOAT(0.0f, 1.0f))
-		{
-			CBasePlayer *pLeader = GetClosestVisibleHumanFriend();
-			if (pLeader && pLeader->IsAutoFollowAllowed())
-			{
-				// count how many bots are already following this player
-				const float maxFollowCount = 2;
-				if (GetBotFollowCount(pLeader) < maxFollowCount)
-				{
-					const float autoFollowRange = 300.0f;
-					if ((pLeader->pev->origin - pev->origin).IsLengthLessThan(autoFollowRange))
-					{
-						CNavArea *leaderArea = TheNavAreaGrid.GetNavArea(&pLeader->pev->origin);
-						if (leaderArea)
-						{
-							PathCost cost(this, FASTEST_ROUTE);
-							float travelRange = NavAreaTravelDistance(GetLastKnownArea(), leaderArea, cost);
-							if (/*travelRange >= 0.0f &&*/ travelRange < autoFollowRange)
-							{
-								// follow this human
-								Follow(pLeader);
-								PrintIfWatched("Auto-Following %s\n", STRING(pLeader->pev->netname));
-
-								if (CSGameRules()->IsCareer())
-								{
-									GetChatter()->Say("FollowingCommander", 10.0f);
-								}
-								else
-								{
-									GetChatter()->Say("FollowingSir", 10.0f);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			// we decided not to follow, don't re-check for a duration
-			m_allowAutoFollowTime = gpGlobals->time + 15.0f + (1.0f - GetProfile()->GetTeamwork()) * 30.0f;
-		}
-	}
-
 	if (IsFollowing())
 	{
 		// if we are following someone, make sure they are still alive
